@@ -6,22 +6,20 @@ import subprocess
 import tempfile
 
 class Source(Base):
-  def __init__(self, vim):
-    super().__init__(vim)
-    self.name = 'go_import'
-    self.kind = Kind(vim)
-    self.persist_actions = []
+    def __init__(self, vim):
+        super().__init__(vim)
+        self.name = 'go_import'
+        self.kind = Kind(vim)
+        self.persist_actions = []
 
-  def gather_candidates(self, context):
-    try:
-      output = subprocess.run(['gopkgs', '-workDir', '.'], stdout=subprocess.PIPE, check=True)
-    except subprocess.CalledProcessError as err:
-      denite.util.error(self.vim, "command returned invalid response: " + str(err))
-      return []
+    def gather_candidates(self, context):
+        try:
+            output = subprocess.run(['gopkgs'], stdout=subprocess.PIPE, check=True)
+        except subprocess.CalledProcessError as err:
+            denite.util.error(self.vim, "command returned invalid response: " + str(err))
+            return []
 
-    return [{
-      'word': x,
-      } for x in output.stdout.decode('utf-8').splitlines()]
+        return [{'word': x,} for x in output.stdout.decode('utf-8').splitlines()]
 
 
 class Kind(object):
@@ -39,11 +37,11 @@ class Kind(object):
 
     def get_action_names(self):
         return ['default'] + [x.replace('action_', '') for x in dir(self)
-                              if x.find('action_') == 0]
+                if x.find('action_') == 0]
 
-    def action_import(self, context):
-        for target in context['targets']:
-            self._import(target['word'])
+        def action_import(self, context):
+            for target in context['targets']:
+                self._import(target['word'])
 
     def action_godoc(self, context):
         self.vim.call('go#doc#Open', 'new', 'split', context['targets'][0]['word'])
