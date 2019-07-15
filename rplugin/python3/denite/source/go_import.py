@@ -39,9 +39,10 @@ class Kind(object):
         return ['default'] + [x.replace('action_', '') for x in dir(self)
                 if x.find('action_') == 0]
 
-        def action_import(self, context):
-            for target in context['targets']:
-                self._import(target['word'])
+        #  xxx
+    def action_import(self, context):
+        for target in context['targets']:
+            self._import(target['word'])
 
     def action_godoc(self, context):
         self.vim.call('go#doc#Open', 'new', 'split', context['targets'][0]['word'])
