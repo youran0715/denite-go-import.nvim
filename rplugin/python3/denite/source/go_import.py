@@ -19,7 +19,8 @@ class Source(Base):
 
     def on_init(self, context):
         # context['is_volatile'] = True
-        context['is_interactive'] = True
+        # context['is_interactive'] = True
+        pass
 
     def refresh_pkgs(self):
         try:
@@ -29,8 +30,10 @@ class Source(Base):
             denite.util.error(self.vim, "command returned invalid response: " + str(err))
             return []
 
-
     def gather_candidates(self, context):
+        return [{'word': x,} for x in self.refresh_pkgs()]
+
+    def gather_candidates_interactive(self, context):
         if len(self.pkg_caches) == 0 or context["is_redraw"] == True:
             self.pkg_caches = self.refresh_pkgs()
             SetCandidates(self.cache_key, self.pkg_caches)
