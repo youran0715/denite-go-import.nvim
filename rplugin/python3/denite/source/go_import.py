@@ -19,8 +19,8 @@ class Source(Base):
 
     def on_init(self, context):
         # context['is_volatile'] = True
-        # context['is_interactive'] = True
-        pass
+        context['is_interactive'] = True
+        # pass
 
     def refresh_pkgs(self):
         try:
@@ -30,7 +30,7 @@ class Source(Base):
             denite.util.error(self.vim, "command returned invalid response: " + str(err))
             return []
 
-    def gather_candidates(self, context):
+    def gather_candidates_orign(self, context):
         return [{'word': x,} for x in self.refresh_pkgs()]
 
     def gather_candidates_interactive(self, context):
@@ -41,6 +41,12 @@ class Source(Base):
         rows = uniteMatch(self.cache_key, context["input"], 20, "")
 
         return [{'word': x,} for x in rows]
+
+    def gather_candidates(self, context):
+        if context['is_interactive'] == True:
+            return self.gather_candidates_interactive(context)
+
+        return self.gather_candidates_orign(context)
 
 class Kind(object):
     def __init__(self, vim):
